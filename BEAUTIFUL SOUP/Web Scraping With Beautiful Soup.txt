@@ -324,6 +324,151 @@ https://content.codecademy.com/courses/beautifulsoup/shellter.html
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+* Find
+------
+Beautiful Soup offers two methods for traversing the HTML tags on a webpage, .find() and .find_all(). Both methods can take just a tag name as a parameter but will return slightly 
+different information.
+
+.find() returns the first tag that matches the parameter or None if there are no tags that match.
+
+	print(soup.find("h1"))
+
+	<h1>World's Best Chocolate Chip Cookies</h1>
+
+Note that this produces the same result as directly accessing h1 through the soup object:
+
+	print(soup.h1)
+
+If we want to find all of the occurrences of a tag, instead of just the first one, we can use .find_all(). .find_all() returns a list of all the tags that match — if no tags match, it 
+returns an empty list.
+
+	print(soup.find_all("h1"))
+
+	[<h1>World's Best Chocolate Chip Cookies</h1>, <h1>Ingredients</h1>]
+
+.find() and .find_all() are far more flexible than just accessing elements directly through the soup object. With these methods, we can use regexes, attributes, or even functions to 
+select HTML elements more intelligently.
+
+* Using Regex
+-------------
+Regular Expressions (regex) is a way to match patterns in a text. We cover Regular Expressions in more depth here. This is invaluable for finding tags on a webpage.
+
+What if we want every <ol> and every <ul> that the page contains? We will use the .compile() function from the re module. We will use the regex: "[ou]l" which means “match either o or u 
+and l“.
+
+We can select both of these types of elements with a regex in our .find_all():
+
+	import re
+	soup.find_all(re.compile("[ou]l"))
+
+What if we want all of the h1 - h9 tags that the page contains? Regex to the rescue again! The expression "h[1-9]" means h and any number between 1 and 9.
+
+	import re
+	soup.find_all(re.compile("h[1-9]"))
+
+* Using Lists
+-------------
+We can also just specify all of the elements we want to find by supplying the function with a list of the tag names we are looking for:
+
+	soup.find_all(['h1', 'a', 'p'])
+
+* Using Attributes
+------------------
+We can also try to match the elements with relevant attributes. We can pass a dictionary to the attrs parameter of find_all with the desired attributes of the elements we’re looking for. 
+If we want to find all of the elements with the "banner" class, for example, we could use the command:
+
+	soup.find_all(attrs={'class':'banner'})
+
+Or, we can specify multiple different attributes! What if we wanted a tag with a "banner" class and the id "jumbotron"?
+
+	soup.find_all(attrs={'class':'banner', 'id':'jumbotron'})
+
+* Using A Function
+------------------
+If our selection starts to get really complicated, we can separate out all of the logic that we’re using to choose a tag into its own function. Then, we can pass that function into 
+.find_all()!
+
+	def has_banner_class_and_hello_world(tag):
+    		return tag.attr('class') == "banner" and tag.string == "Hello world"
+
+	soup.find_all(has_banner_class_and_hello_world)
+
+This command would find an element that looks like this:
+
+	<div class="banner">Hello world</div>
+
+but not an element that looks like this:
+
+	<div>Hello world</div>
+
+Or this:
+
+	<div class="banner">What's up, world!</div>
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+Find all of the a elements on the page and store them in a list called turtle_links.
+
+Checkpoint 2 Passed
+2.
+Print turtle_links. Is this what you expected?
+
+script.py
+---------
+import requests
+from bs4 import BeautifulSoup
+
+webpage_response = requests.get('https://content.codecademy.com/courses/beautifulsoup/shellter.html')
+
+webpage = webpage_response.content
+soup = BeautifulSoup(webpage, "html.parser")
+
+turtle_links = soup.find_all("a")
+
+print(turtle_links)
+
+
+Output
+------
+[<a class="more-info" href="aesop.html"><img class="headshot" src="aesop.png"/></a>, <a class="more-info" href="caesar.html"><img class="headshot" src="caesar.png"/></a>, 
+<a class="more-info" href="sulla.html"><img class="headshot" src="sulla.png"/></a>, <a class="more-info" href="spyro.html"><img class="headshot" src="spyro.png"/></a>, 
+<a class="more-info" href="zelda.html"><img class="headshot" src="zelda.png"/></a>, <a class="more-info" href="bandicoot.html"><img class="headshot" src="bandicoot.png"/></a>, 
+<a class="more-info" href="hal.html"><img class="headshot" src="hal.png"/></a>, <a class="more-info" href="mock.html"><img class="headshot" src="mock.png"/></a>, 
+<a class="more-info" href="sparrow.html"><img class="headshot" src="sparrow.png"/></a>]
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
