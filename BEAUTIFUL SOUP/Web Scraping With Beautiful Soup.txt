@@ -530,6 +530,185 @@ for link in links:
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+* Reading Text
+--------------
+When we use BeautifulSoup to select HTML elements, we often want to grab the text inside of the element, so that we can analyze it. We can use .get_text() to retrieve the text inside of 
+whatever tag we want to call it on.
+
+	<h1 class="results">Search Results for: <span class='searchTerm'>Funfetti</span></h1>
+
+If this is the HTML that has been used to create the soup object, we can make the call:
+
+	soup.get_text()
+
+Which will return:
+
+	'Search Results for: Funfetti'
+
+Notice that this combined the text inside of the outer h1 tag with the text contained in the span tag inside of it! Using get_text(), it looks like both of these strings are part of just 
+one longer string. If we wanted to separate out the texts from different tags, we could specify a separator character. This command would use a | character to separate:
+
+	soup.get_text('|')
+
+Now, the command returns:
+
+	'Search Results for: |Funfetti'
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+After the loop, print out turtle_data. We have been storing the names as the whole p tag containing the name.
+
+Instead, let’s call get_text() on the turtle_name element and store the result as the key of our dictionary instead.
+
+
+Hint
+turtle_name should now be equal to something like:
+
+	turtle.select(".name")[0].get_text()
+
+Checkpoint 2 Passed
+2.
+Instead of associating each turtle with an empty list, let’s have each turtle associated with a list of the stats that are available on their page.
+
+It looks like each piece of information is in a li element on the turtle’s page.
+
+Get the ul element on the page, and get all of the text in it, separated by a '|' character so that we can easily split out each attribute later.
+
+Store the resulting string in turtle_data[turtle_name] instead of storing an empty list there.
+
+
+Hint
+At this point, the value of each turtle_data[turtle_name] should look something like:
+
+	turtle.find("ul").get_text("|")
+
+Checkpoint 3 Passed
+3.
+When we store the list of info in each turtle_data[turtle_name], separate out each list element again by splitting on '|'.
+
+
+Hint
+The built-in string .split() method will come in handy here. Recall that this method divides a single string into a list of strings based on the delimiter that is passed as an argument. 
+If no argument is given, the string will be split on spaces by default. In the following example, see how transaction_data is split with a semicolon as its delimiter.
+
+	transaction_data = 'Pepperoni Pizza;4.99;02/15/2022'
+	transaction_data_split = transaction_data.split(';')
+
+	print(transaction_data_split) # Prints ['Pepperoni Pizza', '4.99', '02/15/2022']
+
+At this point, the value of each turtle_data[turtle_name] should look something like:
+
+	turtle.find("ul").get_text("|").split("|")
+
+script.py
+---------
+import requests
+from bs4 import BeautifulSoup
+
+prefix = "https://content.codecademy.com/courses/beautifulsoup/"
+webpage_response = requests.get('https://content.codecademy.com/courses/beautifulsoup/shellter.html')
+
+webpage = webpage_response.content
+soup = BeautifulSoup(webpage, "html.parser")
+
+turtle_links = soup.find_all("a")
+links = []
+#go through all of the a tags and get the links associated with them:
+for a in turtle_links:
+  links.append(prefix+a["href"])
+    
+#Define turtle_data:
+turtle_data = {}
+
+#follow each link:
+for link in links:
+  webpage = requests.get(link)
+  turtle = BeautifulSoup(webpage.content, "html.parser")
+  turtle_name = turtle.select(".name")[0]
+  turtle_data[turtle.select(".name")[0].get_text()] = turtle.find("ul").get_text("|").split("|")
+  
+  print(turtle_data)
+
+Output
+------
+{'Aesop': ['\n', 'AGE: 7 Years Old', '\n', 'WEIGHT: 6 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n']}
+{'Aesop': ['\n', 'AGE: 7 Years Old', '\n', 'WEIGHT: 6 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 
+'Caesar': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 4 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n']}
+{'Aesop': ['\n', 'AGE: 7 Years Old', '\n', 'WEIGHT: 6 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 
+'Caesar': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 4 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Sulla': ['\n', 'AGE: 
+1 Year Old', '\n', 'WEIGHT: 1 lb', '\n', 'SEX: Male', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n']}
+{'Aesop': ['\n', 'AGE: 7 Years Old', '\n', 'WEIGHT: 6 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 
+'Caesar': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 4 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Sulla': ['\n', 'AGE: 
+1 Year Old', '\n', 'WEIGHT: 1 lb', '\n', 'SEX: Male', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 'Spyro': ['\n', 'AGE: 6 Years 
+Old', '\n', 'WEIGHT: 3 lbs', '\n', 'SEX: Female', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n']}
+{'Aesop': ['\n', 'AGE: 7 Years Old', '\n', 'WEIGHT: 6 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 
+'Caesar': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 4 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Sulla': ['\n', 'AGE: 
+1 Year Old', '\n', 'WEIGHT: 1 lb', '\n', 'SEX: Male', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 'Spyro': ['\n', 'AGE: 6 Years 
+Old', '\n', 'WEIGHT: 3 lbs', '\n', 'SEX: Female', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Zelda': ['\n', 'AGE: 3 Years Old', '\n', 'WEIGHT: 2 
+lbs', '\n', 'SEX: Female', '\n', 'BREED: Eastern Box Turtle', '\n', 'SOURCE: surrendered by owner', '\n']}
+{'Aesop': ['\n', 'AGE: 7 Years Old', '\n', 'WEIGHT: 6 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 
+'Caesar': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 4 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Sulla': ['\n', 'AGE: 
+1 Year Old', '\n', 'WEIGHT: 1 lb', '\n', 'SEX: Male', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 'Spyro': ['\n', 'AGE: 6 Years 
+Old', '\n', 'WEIGHT: 3 lbs', '\n', 'SEX: Female', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Zelda': ['\n', 'AGE: 3 Years Old', '\n', 'WEIGHT: 2 
+lbs', '\n', 'SEX: Female', '\n', 'BREED: Eastern Box Turtle', '\n', 'SOURCE: surrendered by owner', '\n'], 'Bandicoot': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 2 lbs', '\n', 
+'SEX: Male', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: hatched in house', '\n']}
+{'Aesop': ['\n', 'AGE: 7 Years Old', '\n', 'WEIGHT: 6 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 
+'Caesar': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 4 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Sulla': ['\n', 'AGE: 
+1 Year Old', '\n', 'WEIGHT: 1 lb', '\n', 'SEX: Male', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 'Spyro': ['\n', 'AGE: 6 Years Old', 
+'\n', 'WEIGHT: 3 lbs', '\n', 'SEX: Female', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Zelda': ['\n', 'AGE: 3 Years Old', '\n', 'WEIGHT: 2 lbs', '\n', 
+'SEX: Female', '\n', 'BREED: Eastern Box Turtle', '\n', 'SOURCE: surrendered by owner', '\n'], 'Bandicoot': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 2 lbs', '\n', 'SEX: Male', '\n', 
+'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: hatched in house', '\n'], 'Hal': ['\n', 'AGE: 1 Year Old', '\n', 'WEIGHT: 1.5 lbs', '\n', 'SEX: Female', '\n', 'BREED: 
+Eastern Box Turtle', '\n', 'SOURCE: surrendered by owner', '\n']}
+{'Aesop': ['\n', 'AGE: 7 Years Old', '\n', 'WEIGHT: 6 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 
+'Caesar': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 4 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Sulla': ['\n', 'AGE: 
+1 Year Old', '\n', 'WEIGHT: 1 lb', '\n', 'SEX: Male', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 'Spyro': ['\n', 'AGE: 6 Years Old',
+ '\n', 'WEIGHT: 3 lbs', '\n', 'SEX: Female', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Zelda': ['\n', 'AGE: 3 Years Old', '\n', 'WEIGHT: 2 lbs', '\n', 
+'SEX: Female', '\n', 'BREED: Eastern Box Turtle', '\n', 'SOURCE: surrendered by owner', '\n'], 'Bandicoot': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 2 lbs', '\n', 'SEX: Male', '\n', 
+'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: hatched in house', '\n'], 'Hal': ['\n', 'AGE: 1 Year Old', '\n', 'WEIGHT: 1.5 lbs', '\n', 'SEX: Female', '\n', 
+'BREED: Eastern Box Turtle', '\n', 'SOURCE: surrendered by owner', '\n'], 'Mock': ['\n', 'AGE: 10 Years Old', '\n', 'WEIGHT: 10 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', 
+'\n', 'SOURCE: surrendered by owner', '\n']}
+{'Aesop': ['\n', 'AGE: 7 Years Old', '\n', 'WEIGHT: 6 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 
+'Caesar': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 4 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Sulla': ['\n', 'AGE: 1 Year Old',
+ '\n', 'WEIGHT: 1 lb', '\n', 'SEX: Male', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: found in Lake Erie', '\n'], 'Spyro': ['\n', 'AGE: 6 Years Old', '\n', 
+'WEIGHT: 3 lbs', '\n', 'SEX: Female', '\n', 'BREED: Greek Tortoise', '\n', 'SOURCE: hatched in house', '\n'], 'Zelda': ['\n', 'AGE: 3 Years Old', '\n', 'WEIGHT: 2 lbs', '\n', 
+'SEX: Female', '\n', 'BREED: Eastern Box Turtle', '\n', 'SOURCE: surrendered by owner', '\n'], 'Bandicoot': ['\n', 'AGE: 2 Years Old', '\n', 'WEIGHT: 2 lbs', '\n', 'SEX: Male', '\n', 
+'BREED: African Aquatic Sideneck Turtle', '\n', 'SOURCE: hatched in house', '\n'], 'Hal': ['\n', 'AGE: 1 Year Old', '\n', 'WEIGHT: 1.5 lbs', '\n', 'SEX: Female', '\n', 
+'BREED: Eastern Box Turtle', '\n', 'SOURCE: surrendered by owner', '\n'], 'Mock': ['\n', 'AGE: 10 Years Old', '\n', 'WEIGHT: 10 lbs', '\n', 'SEX: Male', '\n', 'BREED: Greek Tortoise', 
+'\n', 'SOURCE: surrendered by owner', '\n'], 'Sparrow': ['\n', 'AGE: 1.5 Years Old', '\n', 'WEIGHT: 4.5 lbs', '\n', 'SEX: Female', '\n', 'BREED: African Aquatic Sideneck Turtle', '\n', 
+'SOURCE: found in Lake Erie', '\n']}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
