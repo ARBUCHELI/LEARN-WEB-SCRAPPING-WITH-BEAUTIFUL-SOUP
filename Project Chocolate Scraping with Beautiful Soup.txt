@@ -4,8 +4,8 @@
 # LEARN WEB SCRAPING WITH BEAUTIFUL SOUP
 ----------------------------------------
 
-* Chocolate Scraping with Beautiful Soup
-----------------------------------------
+ Chocolate Scraping with Beautiful Soup
+
 After eating chocolate bars your whole life, you’ve decided to go on a quest to find the greatest chocolate bar in the world.
 
 You’ve found a website that has over 1700 reviews of chocolate bars from all around the world. It’s displayed in the web browser on this page.
