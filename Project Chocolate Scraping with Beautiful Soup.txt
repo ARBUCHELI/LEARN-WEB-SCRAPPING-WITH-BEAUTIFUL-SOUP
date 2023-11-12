@@ -1,8 +1,8 @@
 # PROJECT
 ---------
 
-LEARN WEB SCRAPING WITH BEAUTIFUL SOUP
-
+# LEARN WEB SCRAPING WITH BEAUTIFUL SOUP
+----------------------------------------
 
 * Chocolate Scraping with Beautiful Soup
 ----------------------------------------
